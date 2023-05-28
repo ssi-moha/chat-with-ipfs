@@ -1,19 +1,11 @@
 import { useState } from "react";
 import { useAppDispatch } from "./store/store";
-import { MessageAdapter } from "./store/message/MessageAdapter";
-
-type ChatInputProps = {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-const ChatInput = ({ value, onChange }: ChatInputProps) => {
-  return <input type="text" value={value} onChange={onChange} />;
-};
-
-const SendButton = ({ sendMessage }: { sendMessage(): void }) => {
-  return <button onClick={sendMessage}>Send</button>;
-};
+import {
+  MessageAdapter,
+} from "./store/message/MessageAdapter";
+import { ChatInput } from "./ChatInput";
+import { SendButton } from "./SendButton";
+import { MessageList } from "./MessageList";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -31,6 +23,7 @@ function App() {
     <>
       <ChatInput onChange={handleInputChange} value={inputValue} />
       <SendButton sendMessage={sendMessage} />
+      <MessageList />
     </>
   );
 }

@@ -10,3 +10,9 @@ export const MessageAdapter = {
     return cid;
   }),
 };
+
+export const getMessageFromCid = async (cid: string) => {
+  const message = await Network.get(cid);
+
+  return message;
+};

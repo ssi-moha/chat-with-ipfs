@@ -5,7 +5,7 @@ const NODE_NOT_INITIALIZED = "IPFS node is not initialized yet";
 
 class IPFSClient implements NetworkClient {
   private node: IPFS.IPFS | null = null;
-  private textEncoder = new TextEncoder();
+  private textDecoder = new TextDecoder();
 
   constructor() {
     this.initialize();
@@ -22,10 +22,35 @@ class IPFSClient implements NetworkClient {
 
     const messageAdded = await this.node.add({
       path: "message",
-      content: this.textEncoder.encode(message),
+      content: message,
     });
 
     return messageAdded.cid.toString();
+  }
+
+  public async getMessageFromCid(cid: string) {
+    if (!this.node) {
+      throw new Error(NODE_NOT_INITIALIZED);
+    }
+
+    const chunks = [];
+    for await (const chunk of this.node.cat(cid)) {
+      chunks.push(chunk);
+    }
+
+    const allChunks = new Uint8Array(
+      chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+    );
+
+    let position = 0;
+    for (const chunk of chunks) {
+      allChunks.set(chunk, position);
+      position += chunk.length;
+    }
+
+    const message = this.textDecoder.decode(allChunks);
+
+    return message;
   }
 }
 
